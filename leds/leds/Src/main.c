@@ -4,7 +4,7 @@
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 
-bool isRunning = true;
+bool isRunning = false;
 
 int main(void)
 {
