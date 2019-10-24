@@ -1,84 +1,48 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
 #include "main.h"
 #include <stdbool.h>
-
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 
-
-
 bool isRunning = true;
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-  /* Configure the system clock */
   SystemClock_Config();
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
 
-  /* Infinite loop */
-  const uint32_t delayLength = 1000;
+  const uint32_t delayLength = 250;
   const uint8_t ledsCount = 8;
-  uint8_t filledLeds = 0;
-  uint16_t led;
-
+  uint8_t halfOfFilledLeds = 0;
+	
   while (true) {
     if (!isRunning) {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
                               |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
-      filledLeds = 0;
+      halfOfFilledLeds = 0;
       while (!isRunning) {
         HAL_Delay(1);
       }
     }
-    
-    /* if all leds were filled, reset all leds */
-    if (filledLeds == ledsCount) {
+        
+		/* if all leds were filled, reset all leds */
+    if (halfOfFilledLeds == ledsCount/2) {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
                               |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
-      filledLeds = 0;
+      halfOfFilledLeds = 0;
       HAL_Delay(delayLength);
     }
-    
-    /* for leds that are not filled, set them for 1 sec */
-    led = GPIO_PIN_0;
-    for (uint8_t ledNo = 0; isRunning && (ledNo < (ledsCount - filledLeds)); ++ledNo) {
-      HAL_GPIO_WritePin(GPIOB, led, GPIO_PIN_SET);
-      HAL_Delay(delayLength);
-      HAL_GPIO_WritePin(GPIOB, led, GPIO_PIN_RESET);
-      led <<= 1;
-    }
-
-    /* set last unfilled led */
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 << (ledsCount - filledLeds - 1), GPIO_PIN_SET);
-    ++filledLeds;
+    					
+    for(uint8_t i = 1; isRunning && (i <= (ledsCount / 2) - halfOfFilledLeds); i++)	{
+		  HAL_GPIO_WritePin(GPIOB,(1 << (i - 1)) | (1 << (ledsCount - i)), GPIO_PIN_SET);
+	    HAL_Delay(delayLength);
+			if (i < (ledsCount / 2) - halfOfFilledLeds) {
+				HAL_GPIO_WritePin(GPIOB,(1 << (i - 1)) | (1 << (ledsCount - i)), GPIO_PIN_RESET);  	
+				HAL_Delay(1);
+			}
+    }		
+		halfOfFilledLeds++;			
   }
 }
 
@@ -115,6 +79,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
+
 
 /**
   * @brief GPIO Initialization Function
@@ -164,10 +129,6 @@ void EXTI0_IRQHandler(void)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -180,11 +141,5 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 { 
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
