@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -15,13 +16,18 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stdbool.h>
 
-/* Private function prototypes -----------------------------------------------*/
+
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+
+
+
+bool isRunning = true;
 
 /**
   * @brief  The application entry point.
@@ -29,19 +35,50 @@ static void MX_GPIO_Init(void);
   */
 int main(void)
 {
-  /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
   /* Configure the system clock */
   SystemClock_Config();
-
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
 
-  while (1)
-  {
+  /* Infinite loop */
+  const uint32_t delayLength = 1000;
+  const uint8_t ledsCount = 8;
+  uint8_t filledLeds = 0;
+  uint16_t led;
+
+  while (true) {
+    if (!isRunning) {
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                              |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
+      filledLeds = 0;
+      while (!isRunning) {
+        HAL_Delay(1);
+      }
+    }
+    
+    /* if all leds were filled, reset all leds */
+    if (filledLeds == ledsCount) {
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                              |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
+      filledLeds = 0;
+      HAL_Delay(delayLength);
+    }
+    
+    /* for leds that are not filled, set them for 1 sec */
+    led = GPIO_PIN_0;
+    for (uint8_t ledNo = 0; isRunning && (ledNo < (ledsCount - filledLeds)); ++ledNo) {
+      HAL_GPIO_WritePin(GPIOB, led, GPIO_PIN_SET);
+      HAL_Delay(delayLength);
+      HAL_GPIO_WritePin(GPIOB, led, GPIO_PIN_RESET);
+      led <<= 1;
+    }
+
+    /* set last unfilled led */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 << (ledsCount - filledLeds - 1), GPIO_PIN_SET);
+    ++filledLeds;
   }
 }
 
@@ -111,7 +148,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
 }
+
+void EXTI0_IRQHandler(void)
+{
+  isRunning = !isRunning;
+}
+
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -119,7 +164,10 @@ static void MX_GPIO_Init(void)
   */
 void Error_Handler(void)
 {
+  /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -132,8 +180,10 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 { 
+  /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
 
