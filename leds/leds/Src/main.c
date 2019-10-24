@@ -14,35 +14,31 @@ int main(void)
 
   const uint32_t delayLength = 250;
   const uint8_t ledsCount = 8;
-  uint8_t halfOfFilledLeds = 0;
 	
   while (true) {
     if (!isRunning) {
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
                               |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
-      halfOfFilledLeds = 0;
       while (!isRunning) {
         HAL_Delay(1);
       }
     }
-        
-		/* if all leds were filled, reset all leds */
-    if (halfOfFilledLeds == ledsCount/2) {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
-                              |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
-      halfOfFilledLeds = 0;
-      HAL_Delay(delayLength);
-    }
-    					
-    for(uint8_t i = 1; isRunning && (i <= (ledsCount / 2) - halfOfFilledLeds); i++)	{
-		  HAL_GPIO_WritePin(GPIOB,(1 << (i - 1)) | (1 << (ledsCount - i)), GPIO_PIN_SET);
-	    HAL_Delay(delayLength);
-			if (i < (ledsCount / 2) - halfOfFilledLeds) {
-				HAL_GPIO_WritePin(GPIOB,(1 << (i - 1)) | (1 << (ledsCount - i)), GPIO_PIN_RESET);  	
-				HAL_Delay(1);
-			}
+           					
+    for (uint8_t i = 1; isRunning && (i <= (ledsCount / 2) + 1); i++)	{			
+      if (i <= (ledsCount / 2)) {
+        HAL_GPIO_WritePin(GPIOB,(1 << (i - 1)) | (1 << (ledsCount - i)), GPIO_PIN_SET);
+        HAL_Delay(delayLength);
+        HAL_GPIO_WritePin(GPIOB,(1 << (i - 1)) | (1 << (ledsCount - i)), GPIO_PIN_RESET);  	
+        HAL_Delay(1);
+      } else  {
+        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                              |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_SET); 
+        HAL_Delay(delayLength);
+        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                              |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET); 
+        HAL_Delay(delayLength);
+      }
     }		
-		halfOfFilledLeds++;			
   }
 }
 

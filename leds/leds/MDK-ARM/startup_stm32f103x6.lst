@@ -440,10 +440,10 @@ ARM Macro Assembler    Page 7
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=leds\startup_stm32f103x6.d -oleds\startup_stm32f103x6.o -I.\RTE\_l
-eds -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core\Include -IC:\Keil_v5\ARM\P
-ACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__MICROLIB SETA 1" --p
-redefine="__UVISION_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="S
-TM32F10X_LD SETA 1" --list=startup_stm32f103x6.lst startup_stm32f103x6.s
+eds -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -IC:\Keil_v5\ARM\PACK\K
+eil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__MICROLIB SETA 1" --predef
+ine="__UVISION_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="STM32F
+10X_LD SETA 1" --list=startup_stm32f103x6.lst startup_stm32f103x6.s
 
 
 
