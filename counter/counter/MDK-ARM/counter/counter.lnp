@@ -1,0 +1,23 @@
+--cpu Cortex-M3
+"counter\startup_stm32f103x6.o"
+"counter\main.o"
+"counter\stm32f1xx_it.o"
+"counter\stm32f1xx_hal_msp.o"
+"counter\stm32f1xx_hal_gpio_ex.o"
+"counter\stm32f1xx_hal_tim.o"
+"counter\stm32f1xx_hal_tim_ex.o"
+"counter\stm32f1xx_hal.o"
+"counter\stm32f1xx_hal_rcc.o"
+"counter\stm32f1xx_hal_rcc_ex.o"
+"counter\stm32f1xx_hal_gpio.o"
+"counter\stm32f1xx_hal_dma.o"
+"counter\stm32f1xx_hal_cortex.o"
+"counter\stm32f1xx_hal_pwr.o"
+"counter\stm32f1xx_hal_flash.o"
+"counter\stm32f1xx_hal_flash_ex.o"
+"counter\stm32f1xx_hal_exti.o"
+"counter\system_stm32f1xx.o"
+--library_type=microlib --strict --scatter "counter\counter.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "counter.map" -o counter\counter.axf
