@@ -1,0 +1,23 @@
+--cpu Cortex-M3
+"lock\startup_stm32f103x6.o"
+"lock\main.o"
+"lock\stm32f1xx_it.o"
+"lock\stm32f1xx_hal_msp.o"
+"lock\stm32f1xx_hal_gpio_ex.o"
+"lock\stm32f1xx_hal_tim.o"
+"lock\stm32f1xx_hal_tim_ex.o"
+"lock\stm32f1xx_hal.o"
+"lock\stm32f1xx_hal_rcc.o"
+"lock\stm32f1xx_hal_rcc_ex.o"
+"lock\stm32f1xx_hal_gpio.o"
+"lock\stm32f1xx_hal_dma.o"
+"lock\stm32f1xx_hal_cortex.o"
+"lock\stm32f1xx_hal_pwr.o"
+"lock\stm32f1xx_hal_flash.o"
+"lock\stm32f1xx_hal_flash_ex.o"
+"lock\stm32f1xx_hal_exti.o"
+"lock\system_stm32f1xx.o"
+--library_type=microlib --strict --scatter "lock\lock.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "lock.map" -o lock\lock.axf
