@@ -3,7 +3,7 @@
 <title>Static Call Graph - [lock\lock.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image lock\lock.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Nov 27 16:49:05 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Nov 27 17:11:31 2019
 <BR><P>
 <H3>Maximum Stack Usage =        136 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -244,22 +244,22 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103x6.o(RESET)
 </UL>
-<P><STRONG><a name="[39]"></a>ClearCurrentInput</STRONG> (Thumb, 90 bytes, Stack size 16 bytes, main.o(i.ClearCurrentInput))
+<P><STRONG><a name="[39]"></a>ClearCurrentInput</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, main.o(i.ClearCurrentInput))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = ClearCurrentInput
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_Stop_IT
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_Start_IT
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleAsteriskPressed
+<BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleAsteriskPressed
 </UL>
 
-<P><STRONG><a name="[62]"></a>CompareArrays</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, main.o(i.CompareArrays))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = CompareArrays
+<P><STRONG><a name="[62]"></a>CompareArrays</STRONG> (Thumb, 28 bytes, Stack size 12 bytes, main.o(i.CompareArrays))
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = CompareArrays
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
+<BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
 </UL>
 
 <P><STRONG><a name="[43]"></a>ConvertCodeToDigitChar</STRONG> (Thumb, 110 bytes, Stack size 0 bytes, main.o(i.ConvertCodeToDigitChar))
@@ -274,7 +274,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 </UL>
-<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
+<BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
 </UL>
 
 <P><STRONG><a name="[3f]"></a>DisplayDigit</STRONG> (Thumb, 86 bytes, Stack size 32 bytes, main.o(i.DisplayDigit))
@@ -319,17 +319,17 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LoopColumns
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
 <LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DelayLed
 </UL>
 
-<P><STRONG><a name="[42]"></a>HAL_GPIO_EXTI_Callback</STRONG> (Thumb, 120 bytes, Stack size 16 bytes, main.o(i.HAL_GPIO_EXTI_Callback))
+<P><STRONG><a name="[42]"></a>HAL_GPIO_EXTI_Callback</STRONG> (Thumb, 126 bytes, Stack size 16 bytes, main.o(i.HAL_GPIO_EXTI_Callback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = HAL_GPIO_EXTI_Callback &rArr; HandlePasswordInput &rArr; DelayLed &rArr; HAL_Delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleAsteriskPressed
+<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleAsteriskPressed
 <LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ConvertCodeToDigitChar
 </UL>
 <BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_EXTI_IRQHandler
@@ -355,9 +355,9 @@ Global Symbols
 <P><STRONG><a name="[3b]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(i.HAL_GPIO_WritePin))
 <BR><BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LoopColumns
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleAsteriskPressed
+<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePasswordInput
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleHashPressed
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleAsteriskPressed
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DisplayDigit
 <LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ClearCurrentInput
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
@@ -537,7 +537,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 
-<P><STRONG><a name="[46]"></a>HandleAsteriskPressed</STRONG> (Thumb, 62 bytes, Stack size 16 bytes, main.o(i.HandleAsteriskPressed))
+<P><STRONG><a name="[44]"></a>HandleAsteriskPressed</STRONG> (Thumb, 62 bytes, Stack size 16 bytes, main.o(i.HandleAsteriskPressed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = HandleAsteriskPressed &rArr; ClearCurrentInput
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -546,7 +546,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_EXTI_Callback
 </UL>
 
-<P><STRONG><a name="[44]"></a>HandleHashPressed</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, main.o(i.HandleHashPressed))
+<P><STRONG><a name="[45]"></a>HandleHashPressed</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, main.o(i.HandleHashPressed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = HandleHashPressed &rArr; HAL_Delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -556,7 +556,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_EXTI_Callback
 </UL>
 
-<P><STRONG><a name="[45]"></a>HandlePasswordInput</STRONG> (Thumb, 254 bytes, Stack size 32 bytes, main.o(i.HandlePasswordInput))
+<P><STRONG><a name="[46]"></a>HandlePasswordInput</STRONG> (Thumb, 258 bytes, Stack size 32 bytes, main.o(i.HandlePasswordInput))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = HandlePasswordInput &rArr; DelayLed &rArr; HAL_Delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -574,7 +574,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103x6.o(RESET)
 </UL>
-<P><STRONG><a name="[63]"></a>LoopColumns</STRONG> (Thumb, 56 bytes, Stack size 24 bytes, main.o(i.LoopColumns))
+<P><STRONG><a name="[63]"></a>LoopColumns</STRONG> (Thumb, 54 bytes, Stack size 24 bytes, main.o(i.LoopColumns))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = LoopColumns &rArr; HAL_Delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin

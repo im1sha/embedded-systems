@@ -68,8 +68,8 @@ const uint16_t LED_GREEN = GPIO_PIN_15;
 const uint8_t NO_INPUT = 0xFFU;
 
 const uint8_t MAX_NUMBER = 9;
-const uint8_t STAR_CODE = MAX_NUMBER + 1;
-const uint8_t HASH_CODE = MAX_NUMBER + 2;
+const uint8_t STAR_CHAR = MAX_NUMBER + 1;
+const uint8_t HASH_CHAR = MAX_NUMBER + 2;
 const uint32_t CODE_SHIFT = 4;
 
 const uint8_t PASSWORD_LENGTH = 4;
@@ -90,6 +90,7 @@ bool isNewPublicPasswordInput = false;
 bool isHashPressed = false;
 bool isAsteriskPressed= false;
 
+
 const uint32_t DEFAULT_IT_DEBOUNCE = 100;
 uint32_t itDebounce = DEFAULT_IT_DEBOUNCE;
 
@@ -100,9 +101,11 @@ uint8_t currentDigitToShow = 0;
 
 void DisplayDigit(int32_t value, int32_t position)
 {
-	for (int32_t i = 0; i < 4; i++)
+	for (int32_t i = 0; i < DISPLAY_TOTAL_DIGIT_PINS; i++)
+	{
 		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);
-		
+	}
+
 	for (int32_t i = 0; i < DISPLAY_TOTAL_SEGMENT_PINS; i++)
 	{
 		GPIO_PinState currentPin = (DISPLAY_DIGITS[value] >> i) & 1 
@@ -116,7 +119,7 @@ void DisplayDigit(int32_t value, int32_t position)
 
 void LoopColumns() 
 {
-	for (uint8_t i = 0; i < LOCK_TOTAL_COLUMNS; i++)
+	for (uint32_t i = 0; i < LOCK_TOTAL_COLUMNS; i++)
 	{
 		lockCurrentColumn = i;
 		HAL_GPIO_WritePin(GPIOB, LOCK_COLUMN_PINS[i], GPIO_PIN_SET);
@@ -136,9 +139,13 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM1_Init();
 	HAL_TIM_Base_Start_IT(&htim1);
-	for (int32_t i = 0; i < 4; i++)
+
+	for (int32_t i = 0; i < DISPLAY_TOTAL_DIGITS; i++) 
+	{
 		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);
-  while (1)
+	}
+
+  while (true)
   {
 		LoopColumns();
   }
@@ -155,8 +162,8 @@ uint8_t ConvertCodeToDigitChar(uint8_t code)
 		case 0x02:
 			return 7;
 		case 0x03:
-			//STAR
-			return 10;
+			return STAR_CHAR;
+
 		case 0x10:
 			return 2;
 		case 0x11:
@@ -165,6 +172,7 @@ uint8_t ConvertCodeToDigitChar(uint8_t code)
 			return 8;
 		case 0x13:
 			return 0;
+
 		case 0x20:
 			return 3;
 		case 0x21:
@@ -172,61 +180,76 @@ uint8_t ConvertCodeToDigitChar(uint8_t code)
 		case 0x22:
 			return 9;
 		case 0x23:
-			//HASH
-			return 11;
+			return HASH_CHAR;
+
 		default:
 			return 0xFF;		
 	}	
 }
 
-void ClearCurrentInput(){
+void ClearCurrentInput()
+{
 	HAL_TIM_Base_Stop_IT(&htim1);
+
 	currentInputLength = 0;
 	
-	for (int32_t i = 0; i < 4; i++)
-		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);	
+	for (int32_t i = 0; i < DISPLAY_TOTAL_DIGITS; i++)
+	{
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);
+	}
 	for (int32_t i = 0; i < DISPLAY_TOTAL_SEGMENT_PINS; i++)
-		HAL_GPIO_WritePin(GPIOA, DISPLAY_SEGMENT_PINS[i], GPIO_PIN_RESET);				
-	
-	for (uint8_t i = 0; i < 4; i++)
+	{
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_SEGMENT_PINS[i], GPIO_PIN_RESET);
+	}
+	for (int32_t i = 0; i < 4; i++)
 	{
 		currentInput[i] = NO_INPUT;
 	}		
 	HAL_TIM_Base_Start_IT(&htim1);
 }
 
-void HandleHashPressed(){
-	if (isNewPublicPasswordInput){
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET);
+void HandleHashPressed()
+{
+	if (isNewPublicPasswordInput)
+	{
+		HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_SET);
 		HAL_Delay(LED_DEFAULT_DELAY);
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_RESET);
 		isNewPublicPasswordInput = false;
-   }
-   else if(currentInputLength > 0){
+  }
+  else if(currentInputLength > 0)
+	{
 		ClearCurrentInput();
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, LED_YELLOW, GPIO_PIN_SET);
 		HAL_Delay(LED_DEFAULT_DELAY);
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_RESET);		
-   }
-   isHashPressed = false;
+		HAL_GPIO_WritePin(GPIOA, LED_YELLOW, GPIO_PIN_RESET);
+  }
+  isHashPressed = false;
 }
 
-void HandleAsteriskPressed(){
-	if (isNewPublicPasswordInput){
+void HandleAsteriskPressed()
+{
+	if (isNewPublicPasswordInput)
+	{
 		isNewPublicPasswordInput = false;
+
 		ClearCurrentInput();
+
 		isAsteriskPressed = false;
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_RESET); 
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_RESET); 
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);		
+		HAL_GPIO_WritePin(GPIOA, LED_YELLOW, GPIO_PIN_RESET); 
+		HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_RESET); 
+		HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_RESET);		
    } 
 }
 
-bool CompareArrays(uint8_t a[], const uint8_t b[])
+bool CompareArrays(const uint8_t a[], const uint8_t b[], int32_t length)
 {
-  for(int32_t i = 0; i < 4; i++) {
-    if (a[i] != b[i]) 
+  for(int32_t i = 0; i < length; i++)
+	{
+		if (a[i] != b[i])
+		{
 			return false;
+		}
   }
   return true;
 }
@@ -237,64 +260,83 @@ void DelayLed(uint32_t time)
 	HAL_Delay(time);
 }
 
-void HandlePasswordInput(){
+void HandlePasswordInput()
+{
 	
-	if(isAsteriskPressed){
-		if (CompareArrays (currentInput,publicPassword)){			
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_SET);
+	if(isAsteriskPressed)
+	{
+		if (CompareArrays(currentInput, publicPassword, PASSWORD_LENGTH))
+		{			
+			HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_SET);
 			DelayLed(LED_DEFAULT_DELAY);
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_RESET);	
+			HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_RESET);
+
 			ClearCurrentInput();			
 		}	
-		else if (CompareArrays (currentInput,SERVICE_PASSWORD)){
+		else if (CompareArrays(currentInput, SERVICE_PASSWORD, PASSWORD_LENGTH))
+		{
 			isNewPublicPasswordInput = true;
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_SET); 
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_SET); 
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET); 
+
+			HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_SET); 
+			HAL_GPIO_WritePin(GPIOA, LED_YELLOW, GPIO_PIN_SET); 
+			HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_SET); 
+
 			ClearCurrentInput();
 		}
-		else {			
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET);
+		else
+		{			
+			HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_SET);
 			DelayLed(LED_DEFAULT_DELAY);
-			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);					
+			HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_RESET);
+
 			ClearCurrentInput();
 		}
 		isAsteriskPressed = false;
 	}
-  else if (isNewPublicPasswordInput){
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_RESET); 
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_RESET); 
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);		
-		for(int32_t i = 0; i < 4; i++) {
+  else if (isNewPublicPasswordInput)
+	{
+		HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_RESET); 
+		HAL_GPIO_WritePin(GPIOA, LED_YELLOW, GPIO_PIN_RESET); 
+		HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_RESET);	
+
+		for(int32_t i = 0; i < PASSWORD_LENGTH; i++)
+		{
 			publicPassword[i] = currentInput[i];
 		}		
+
 		isNewPublicPasswordInput = false;
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_SET);
+
+		HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_SET);
 		DelayLed(LED_DEFAULT_DELAY);
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, LED_GREEN, GPIO_PIN_RESET);
+
 		ClearCurrentInput();
 	}
-	else {
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET);
+	else 
+	{
+		HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_SET);
 		DelayLed(LED_DEFAULT_DELAY);
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, LED_RED, GPIO_PIN_RESET);
+
 		ClearCurrentInput();
   } 
 }
 
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)  
+void HAL_GPIO_EXTI_Callback(uint16_t gpioPin)  
 {
 	uint32_t currentTick = HAL_GetTick();
+
 	if (currentTick - lastDigitTick > itDebounce)
 	{
 		lastDigitTick = currentTick;
-		itDebounce = 100;
+		itDebounce = DEFAULT_IT_DEBOUNCE;
 		
 		uint8_t currentCode = lockCurrentColumn << CODE_SHIFT;
-		for (uint8_t i = 0; i < LOCK_TOTAL_ROWS; i ++)
+
+		for (uint32_t i = 0; i < LOCK_TOTAL_ROWS; i ++)
 		{
-			if (GPIO_Pin == LOCK_ROW_PINS[i])
+			if (gpioPin == LOCK_ROW_PINS[i])
 			{
 				currentCode |= i ;
 				break;
@@ -302,24 +344,30 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		}
 		
 		int8_t newDigit =  ConvertCodeToDigitChar(currentCode);
-		if (newDigit <= 9){	
+
+		if (newDigit <= MAX_NUMBER)
+		{	
 			currentInput[currentInputLength] = newDigit;
 			currentInputLength++;
 		}
-		else{
-			if (newDigit == 10){
+		else
+		{
+			if (newDigit == STAR_CHAR)
+			{
 				if (currentInputLength == 0)
 				{
 					isAsteriskPressed = true;
 				}
 				HandleAsteriskPressed();
 			}
-			else{
+			else if (newDigit == HASH_CHAR) 
+			{
 				isHashPressed = true;
 				HandleHashPressed();
 			}
 		}
-		if (currentInputLength >= 4){
+		if (currentInputLength >= PASSWORD_LENGTH)
+		{
 			HandlePasswordInput();
 		}
 	}
