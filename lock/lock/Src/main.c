@@ -33,34 +33,33 @@ const uint8_t DISPLAY_DIGITS[10] =
 	0x7D, /* 6 */
 	0x07, /* 7 */
 	0x7F, /* 8 */
-	0x6F /* 9 */
+	0x6F  /* 9 */
 };
+const uint8_t DISPLAY_TOTAL_DIGITS = 4;
+const uint8_t DISPLAY_TOTAL_SEGMENT_PINS = 7;
+const uint8_t DISPLAY_TOTAL_DIGIT_PINS = DISPLAY_TOTAL_DIGITS;
+
+const uint16_t DISPLAY_SEGMENT_PINS[DISPLAY_TOTAL_SEGMENT_PINS] = { GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4, GPIO_PIN_3, GPIO_PIN_2, GPIO_PIN_1, GPIO_PIN_0 };
+const uint16_t DISPLAY_DIGIT_PINS[DISPLAY_TOTAL_SEGMENT_PINS] = { GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11 };
 
 //
 // lock
 //
 
-
-const int32_t LOCK_TOTAL_COLUMNS = 3;
-const int32_t LOCK_TOTAL_ROWS = 4;
-uint16_t col_pins[LOCK_TOTAL_COLUMNS] = {GPIO_PIN_5,GPIO_PIN_6,GPIO_PIN_7};
-uint16_t row_pins[LOCK_TOTAL_ROWS] = {GPIO_PIN_0,GPIO_PIN_1,GPIO_PIN_2,GPIO_PIN_3};
-
 uint8_t lockCurrentColumn;
 
-uint16_t seg_pins[7] = {GPIO_PIN_6,GPIO_PIN_5,GPIO_PIN_4,GPIO_PIN_3,GPIO_PIN_2,GPIO_PIN_1,GPIO_PIN_0};
-uint16_t digit_pins[4] = {GPIO_PIN_8,GPIO_PIN_9,GPIO_PIN_10,GPIO_PIN_11};
+const uint8_t LOCK_TOTAL_COLUMNS = 3;
+const uint8_t LOCK_TOTAL_ROWS = 4;
 
-const int32_t DISPLAY_TOTAL_SEGMENT_PINS = 7;
-
-
-
+uint16_t LOCK_COLUMN_PINS[LOCK_TOTAL_COLUMNS] = { GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7 };
+uint16_t LOCK_ROW_PINS[LOCK_TOTAL_ROWS] = { GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3 };
 
 //
 // passwords
 //
+
 const uint8_t PASSWORD_LENGTH = 4;
-const uint8_t NO_INPUT = 0xFFu;
+const uint8_t NO_INPUT = 0xFFU;
 
 const uint8_t SERVICE_PASSWORD[PASSWORD_LENGTH] = { 5, 5, 9, 2 };
 uint8_t publicPassword[PASSWORD_LENGTH] = { 1, 4, 7, 6 };
@@ -86,6 +85,7 @@ bool isAsteriskPressed= false;
 //
 
 const uint32_t LED_DELAY = 400;
+
 const uint16_t RED_LED = GPIO_PIN_13;
 const uint16_t YELLOW_LED = GPIO_PIN_14;
 const uint16_t GREEN_LED = GPIO_PIN_15;
@@ -94,17 +94,17 @@ const uint16_t GREEN_LED = GPIO_PIN_15;
 void DisplayDigit(int32_t value, int32_t position)
 {
 	for (int32_t i = 0; i < 4; i++)
-		HAL_GPIO_WritePin(GPIOA, digit_pins[i], GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);
 		
 	for (int32_t i = 0; i < DISPLAY_TOTAL_SEGMENT_PINS; i++)
 	{
 		GPIO_PinState currentPin = (DISPLAY_DIGITS[value] >> i) & 1 
 			? GPIO_PIN_SET 
 			: GPIO_PIN_RESET;
-		HAL_GPIO_WritePin(GPIOA, seg_pins[i], currentPin);				
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_SEGMENT_PINS[i], currentPin);				
 	}
 	
-	HAL_GPIO_WritePin(GPIOA, digit_pins[position], GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[position], GPIO_PIN_RESET);
 }
 
 void LoopColumns() 
@@ -112,9 +112,9 @@ void LoopColumns()
 	for (uint8_t i = 0; i < LOCK_TOTAL_COLUMNS; i++)
 	{
 		lockCurrentColumn = i;
-		HAL_GPIO_WritePin(GPIOB, col_pins[i], GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOB, LOCK_COLUMN_PINS[i], GPIO_PIN_SET);
 		HAL_Delay(2);
-		HAL_GPIO_WritePin(GPIOB, col_pins[i], GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOB, LOCK_COLUMN_PINS[i], GPIO_PIN_RESET);
 	}
 }
 
@@ -131,7 +131,7 @@ int main(void)
   MX_TIM1_Init();
 	HAL_TIM_Base_Start_IT(&htim1);
 	for (int32_t i = 0; i < 4; i++)
-		HAL_GPIO_WritePin(GPIOA, digit_pins[i], GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);
   while (1)
   {
 		LoopColumns();
@@ -179,9 +179,9 @@ void ClearCurrentInput(){
 	currentInputLength = 0;
 	
 	for (int32_t i = 0; i < 4; i++)
-		HAL_GPIO_WritePin(GPIOA, digit_pins[i], GPIO_PIN_SET);	
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_DIGIT_PINS[i], GPIO_PIN_SET);	
 	for (int32_t i = 0; i < DISPLAY_TOTAL_SEGMENT_PINS; i++)
-		HAL_GPIO_WritePin(GPIOA, seg_pins[i], GPIO_PIN_RESET);				
+		HAL_GPIO_WritePin(GPIOA, DISPLAY_SEGMENT_PINS[i], GPIO_PIN_RESET);				
 	
 	for (uint8_t i = 0; i < 4; i++)
 	{
@@ -293,7 +293,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		uint8_t currentCode = lockCurrentColumn << CODE_SHIFT;
 		for (uint8_t i = 0; i < LOCK_TOTAL_ROWS; i ++)
 		{
-			if (GPIO_Pin == row_pins[i])
+			if (GPIO_Pin == LOCK_ROW_PINS[i])
 			{
 				currentCode |= i ;
 				break;
