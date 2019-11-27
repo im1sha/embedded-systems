@@ -7,8 +7,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 
-const uint8_t STAR_CODE = 10;
-const uint8_t HASH_CODE = 11;
 
 //
 // htim1
@@ -51,17 +49,32 @@ uint8_t lockCurrentColumn;
 const uint8_t LOCK_TOTAL_COLUMNS = 3;
 const uint8_t LOCK_TOTAL_ROWS = 4;
 
-uint16_t LOCK_COLUMN_PINS[LOCK_TOTAL_COLUMNS] = { GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7 };
-uint16_t LOCK_ROW_PINS[LOCK_TOTAL_ROWS] = { GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3 };
+const uint16_t LOCK_COLUMN_PINS[LOCK_TOTAL_COLUMNS] = { GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7 };
+const uint16_t LOCK_ROW_PINS[LOCK_TOTAL_ROWS] = { GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3 };
 
 //
-// passwords
+// leds
 //
 
-const uint8_t PASSWORD_LENGTH = 4;
+const uint32_t LED_DEFAULT_DELAY = 400;
+
+const uint16_t LED_RED = GPIO_PIN_13;
+const uint16_t LED_YELLOW = GPIO_PIN_14;
+const uint16_t LED_GREEN = GPIO_PIN_15;
+
+//
+// input
+//
 const uint8_t NO_INPUT = 0xFFU;
 
+const uint8_t MAX_NUMBER = 9;
+const uint8_t STAR_CODE = MAX_NUMBER + 1;
+const uint8_t HASH_CODE = MAX_NUMBER + 2;
+const uint32_t CODE_SHIFT = 4;
+
+const uint8_t PASSWORD_LENGTH = 4;
 const uint8_t SERVICE_PASSWORD[PASSWORD_LENGTH] = { 5, 5, 9, 2 };
+
 uint8_t publicPassword[PASSWORD_LENGTH] = { 1, 4, 7, 6 };
 
 uint8_t currentInput[PASSWORD_LENGTH] = 
@@ -71,24 +84,18 @@ uint8_t currentInput[PASSWORD_LENGTH] =
 	NO_INPUT,
 	NO_INPUT 
 };
-
 uint8_t currentInputLength = 0;
 
-const uint8_t MAX_NUMBER = 9;
 bool isNewPublicPasswordInput = false;
 bool isHashPressed = false;
 bool isAsteriskPressed= false;
 
+const uint32_t DEFAULT_IT_DEBOUNCE = 100;
+uint32_t itDebounce = DEFAULT_IT_DEBOUNCE;
 
-//
-// leds
-//
+uint32_t lastDigitTick = 0;
 
-const uint32_t LED_DELAY = 400;
-
-const uint16_t RED_LED = GPIO_PIN_13;
-const uint16_t YELLOW_LED = GPIO_PIN_14;
-const uint16_t GREEN_LED = GPIO_PIN_15;
+uint8_t currentDigitToShow = 0;
 
 
 void DisplayDigit(int32_t value, int32_t position)
@@ -118,7 +125,6 @@ void LoopColumns()
 	}
 }
 
-
 /**
   * @brief  The application entry point.
   * @retval int
@@ -138,7 +144,6 @@ int main(void)
   }
 }
 
-const uint32_t CODE_SHIFT = 4;
 uint8_t ConvertCodeToDigitChar(uint8_t code)
 {
 	switch(code)
@@ -193,14 +198,14 @@ void ClearCurrentInput(){
 void HandleHashPressed(){
 	if (isNewPublicPasswordInput){
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET);
-		HAL_Delay(LED_DELAY);
+		HAL_Delay(LED_DEFAULT_DELAY);
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);
 		isNewPublicPasswordInput = false;
    }
    else if(currentInputLength > 0){
 		ClearCurrentInput();
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_SET);
-		HAL_Delay(LED_DELAY);
+		HAL_Delay(LED_DEFAULT_DELAY);
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14, GPIO_PIN_RESET);		
    }
    isHashPressed = false;
@@ -226,9 +231,6 @@ bool CompareArrays(uint8_t a[], const uint8_t b[])
   return true;
 }
 
-
-uint32_t itDebounce = 100;
-
 void DelayLed(uint32_t time)
 {
 	itDebounce += time;
@@ -240,7 +242,7 @@ void HandlePasswordInput(){
 	if(isAsteriskPressed){
 		if (CompareArrays (currentInput,publicPassword)){			
 			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_SET);
-			DelayLed(LED_DELAY);
+			DelayLed(LED_DEFAULT_DELAY);
 			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_RESET);	
 			ClearCurrentInput();			
 		}	
@@ -253,7 +255,7 @@ void HandlePasswordInput(){
 		}
 		else {			
 			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET);
-			DelayLed(LED_DELAY);
+			DelayLed(LED_DEFAULT_DELAY);
 			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);					
 			ClearCurrentInput();
 		}
@@ -268,19 +270,18 @@ void HandlePasswordInput(){
 		}		
 		isNewPublicPasswordInput = false;
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_SET);
-		DelayLed(LED_DELAY);
+		DelayLed(LED_DEFAULT_DELAY);
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15, GPIO_PIN_RESET);
 		ClearCurrentInput();
 	}
 	else {
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_SET);
-		DelayLed(LED_DELAY);
+		DelayLed(LED_DEFAULT_DELAY);
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13, GPIO_PIN_RESET);
 		ClearCurrentInput();
   } 
 }
 
-uint32_t lastDigitTick = 0;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)  
 {
@@ -324,8 +325,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
-
-uint8_t currentDigitToShow = 0;
 void TIM1_UP_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim1);
